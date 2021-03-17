@@ -23,7 +23,9 @@ class main{
         while(true){
             $offset = ($page -1) * $limit ;
 
-            $data = $db->table("ttg_x_recruitment")->limit($limit,$offset)->select();
+            $data = $db->table("ttg_x_recruitment")
+                ->where("source_db_table","ttg_spider.china_gov_detail")
+                ->limit($limit,$offset)->select();
             if(!$data){
                 break;
             }
@@ -33,8 +35,12 @@ class main{
                     ->find();
                 if($record){
                     $this->processHtml($record['content'],$map,$table);
-                    $data[$k]['map'] = $map;
-                    $data[$k]['table'] = $table;
+                    if($map){
+                        $data[$k]['map'] = $map;
+                    }
+                    if($table){
+                        $data[$k]['table'] = $table;
+                    }
                 }
             }
             try {
@@ -54,7 +60,7 @@ class main{
     }
 
     public function processHtml($html,&$mapData=[],&$tableData =[]){
-
+        //file_put_contents("html.html",$html);
         $pregScript = "/<script[\s\S]*?<\/script>/i";
         $pregStyle = "/<style[\s\S]*?<\/style>/i";
         $pregD = "/<div[\s\S]*?>([\s\S]*?)<\/div>/i";
@@ -68,12 +74,12 @@ class main{
         $content = preg_replace('/<tr[\s\S]*?>([\s\S]*?)<\/tr>/i',"$1\r\n",$content,-1);
         $content = preg_replace('/<td[\s\S]*?>([\s\S]*?)<\/td>/i',"$1\t",$content);
         $content = strip_tags($content);
-        $content = preg_replace("/\t+/","\t",$content,-1);
+        $content = preg_replace("/\s*?\t+\s*?\t*?\s*?/","\t",$content,-1);
         $content = str_replace(["\r\n", "\n", "\r"],"|n",$content);
         $content = preg_replace("/[(\|n)]+/","|n",$content);
         $lineArr = explode("|n",$content);
 
-
+        //file_put_contents("./line.txt",print_r($lineArr,true));
         $newArr = [];
         foreach($lineArr as $k=>$line){
             $line = trim($line);
@@ -82,7 +88,7 @@ class main{
             }
         }
 
-        //file_put_contents("./line.txt",print_r($newArr,true));
+        //file_put_contents("./newline.txt",print_r($newArr,true));
 
         $tableData = (new table())->handler($newArr,$mapData);
         //段落索引

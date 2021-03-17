@@ -24,42 +24,56 @@ class table{
                 $arr[$k] = 0;
             }
         }
-
+        //print_r($arr);
         //[0,0,0,3,5,5,5,5,5,0,0,0,0,9,9,9,9] 提取一段连续相同的索引
 
         $flag = true;
         $current = [];
         $result = [];
-        $count = count($arr);
+        $v = false;
         foreach($arr as $k=>$value){
-            $next = $k +1;
-            if($arr[$k] == $arr[$next] && $flag){
-                //比较当前和下一个数据是否一样 并判断是否第一次进来
-                $current[0] = $k;
-                $flag = false;
-            }else if($arr[$k] != $arr[$next] && !$flag){
-                //比较当前和下一个数据是否不一样 并判断是否不是第一次进来
-                $current[1] = $k;
-                if($value){
-                    $current['t'] = $value;
-                    $result[] = $current;
-                }
-                $current = [];
-                $flag = true;
-            }
-
-            if($k == $count - 2){
-                //在数组倒数第二个时跳出
-                if($k > 0){
-                    if($arr[$k] == $arr[$next] && !$flag){
-                        //如果当前和最后一个值一样 并且不是第一次进来则收集数据
-                        $current[1] = $k+1;
-                        if($value){
-                            $result[] = $current;
+            //没有值则跳过
+            if(!isset($current[0])){
+                //如果数组中没有值  第一个
+                $v = $value;
+                $current[] = $k;
+            }else{
+                //如果数组中有值
+                if($value == $v){
+                    //如果相等 继续添加
+                    $current[] = $k;
+                }else{
+                    //如果不相等
+                    if($current){
+                        //收集数据
+                        if($v){
+                            reset($current);
+                            $a[0] = current($current);
+                            $a[1] = end($current);
+                            $a['t'] = $v;
+                            $result[] = $a;
+                            $a = [];
                         }
                     }
+
+                    $current = [];
+                    $v = $value;
+                    $current[] = $k;
                 }
-                break;
+            }
+
+
+            //最后一个
+            if($k +1 == count($arr)){
+
+                if($v){
+                    reset($current);
+                    $a[0] = current($current);
+                    $a[1] = end($current);
+                    $a['t'] = $v;
+                    $result[] = $a;
+                    $a = [];
+                }
             }
         }
        return $result;

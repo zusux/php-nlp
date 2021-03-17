@@ -26,8 +26,10 @@ class section{
             }
         }
 
+        //print_r($matchRes);
         //echo $this->dump($matchRes);
-        file_put_contents("section.txt",print_r($matchRes,true));
+        //file_put_contents("section.txt",print_r($matchRes,true));
+        //[1]
         //[1,0,1,0,1,0,0,0,1,0,1,0]  提取1开头 0结尾的一段数据
         $flag = true;
         $current = [];
@@ -36,28 +38,29 @@ class section{
         foreach($matchRes as $k=>$value){
 
             if($value){
-                if($flag){
-                    $current[0] = $k;
-                    $flag = false;
-                }else{
-                    $result[] = $current;
-                    $current = [];
-                    $current[0] = $k;
-                    $flag = true;
+                if(isset($current[0])){
+                    if(!isset($current[1])){
+                        $current[1] = $k - 1;
+                        $result[] = $current;
+                        $current = [];
+                    }else{
+                        $result[] = $current;
+                        $current = [];
+                    }
                 }
+                $current[0] = $k;
             }else{
-                $current[1] = $k;
-                $flag = false;
+                if(!isset($current[0])){
+                    $current[0] = $k;
+                }else{
+                    $current[1] = $k;
+                }
             }
-
-
 
             if($k == $count -1){
                 //最后一个
                 $current[1] = $k;
                 $result[] = $current;
-                $current = [];
-                $flag = true;
             }
         }
 
@@ -67,11 +70,11 @@ class section{
 
     //正则匹配
     private function matchS($line){
-        return preg_match("/^\s*[(一)(二)(三)(四)(五)(六)(七)(八)(九)(十)]+\s*[、：:]/",$line,$matches);
+        return preg_match("/^(\s)*?[(一)(二)(三)(四)(五)(六)(七)(八)(九)(十)]+\s*?[(、)(：)(:)(·)]+/",$line,$matches);
     }
 
     private function submatchS($line){
-        return preg_match("/^\s*[0-9]+\s*[、：:]/",$line,$matches);
+        return preg_match("/^(\s)*?[0-9]+\s*?[(、)(：)(:)(·)]+/",$line,$matches);
     }
 
     public function dump($arr){
