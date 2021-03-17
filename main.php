@@ -64,6 +64,7 @@ class main{
         $content = preg_replace($pregD,"$1\r\n",$content,-1);
         $content = preg_replace($pregP,"$1\r\n",$content,-1);
         $content = str_replace(['&nbsp;','&gt;','&lt;','&raquo;'],'',$content);
+        $content = str_replace('.','·',$content);
         $content = preg_replace('/<tr[\s\S]*?>([\s\S]*?)<\/tr>/i',"$1\r\n",$content,-1);
         $content = preg_replace('/<td[\s\S]*?>([\s\S]*?)<\/td>/i',"$1\t",$content);
         $content = strip_tags($content);
