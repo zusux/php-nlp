@@ -1,0 +1,8 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.17",
+        "fukuball/jieba-php": "^0.33.0",
+        "zusux/php-mongodb": "^1.0.2",
+        "zusux/db": "^1.4"
+    }
+}
